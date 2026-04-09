@@ -1,0 +1,11 @@
+type Destination @table {
+  ref: String!
+  imageUrl: String
+  name: String!
+  country: String!
+  continent: String!
+  knownFor: String!
+  tags: [String!]
+  createdAt: Timestamp! @default(expr: "request.time")
+  embedding: Vector @col(size: 768)
+}

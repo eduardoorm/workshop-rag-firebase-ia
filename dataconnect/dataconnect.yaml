@@ -1,0 +1,15 @@
+specVersion: "v1"
+serviceId: "gdg-callao-8ed2f-service"
+location: "us-east1"
+schemas:
+  - source: "./schema"
+    datasource:
+      postgresql:
+        database: "gdg-callao-8ed2f-database"
+        cloudSql:
+          instanceId: "gdg-callao-8ed2f-instance"
+          # schemaValidation: "STRICT"     # STRICT mode makes Postgres schema match Data Connect exactly.
+          # schemaValidation: "COMPATIBLE" # COMPATIBLE mode makes Postgres schema compatible with Data Connect.
+connectorDirs: ["./destinations"]
+
+

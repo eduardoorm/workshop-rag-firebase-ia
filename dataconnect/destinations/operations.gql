@@ -1,0 +1,69 @@
+query ListDestinations($continent: String, $limit: Int = 15)
+@auth(level: PUBLIC, insecureReason: "Anyone can list destinations.") {
+  destinations(where: { continent: { eq: $continent } }, limit: $limit) {
+    id
+    name
+    country
+    continent
+    knownFor
+    imageUrl
+    tags
+  }
+}
+
+query GetDestination($ref: String!)
+@auth(level: PUBLIC, insecureReason: "Anyone can get destination details.") {
+  destinations(where: { ref: { eq: $ref } }, limit: 1) {
+    ref
+    name
+    imageUrl
+  }
+}
+
+query SearchDestinations($query: String!, $limit: Int = 10)
+@auth(level: PUBLIC, insecureReason: "Anyone can search destinations.") {
+  destinations_embedding_similarity(
+    compare_embed: { text: $query, model: "text-embedding-004" }
+    limit: $limit
+  ) {
+    name
+    country
+    continent
+    knownFor
+    imageUrl
+    tags
+  }
+}
+
+mutation CreateDestination(
+  $ref: String!
+  $name: String!
+  $country: String!
+  $continent: String!
+  $knownFor: String!
+  $imageUrl: String
+  $tags: [String!]
+) @auth(level: PUBLIC, insecureReason: "Seed data mutation.") {
+  destination_insert(data: {
+    ref: $ref
+    name: $name
+    country: $country
+    continent: $continent
+    knownFor: $knownFor
+    imageUrl: $imageUrl
+    tags: $tags
+    embedding_embed: { text: $knownFor, model: "text-embedding-004" } 
+  })
+}
+
+mutation UpdateDestinationEmbedding(
+  $id: UUID!
+  $knownFor: String!
+) @auth(level: PUBLIC, insecureReason: "Seed data mutation.") {
+  destination_update(
+    key: { id: $id }
+    data: {
+      embedding_embed: { text: $knownFor, model: "text-embedding-004" }
+    }
+  )
+}
