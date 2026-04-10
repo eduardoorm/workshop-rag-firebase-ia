@@ -1,0 +1,26 @@
+---
+model: googleai/gemini-2.5-flash
+input:
+    schema:
+        description?: string
+        imageUrls?(array): string
+output:
+    schema:
+        trips(array, a list of 3 suggested trips):
+            ref: string, the exact name of the destination from the context (e.g. "Máncora", "Cusco")
+            title: string, a short and catchy trip title in spanish (max 6 words)
+            description: string, a 2-sentence personalized description in spanish explaining why this destination matches the user preferences
+---
+Here are the possible destinations:
+{{#each context}}
+- {{this.text}}
+  imageUrl: {{this.metadata.imageUrl}}
+{{/each}}
+You are a travel assistant helping the user decide on a vacation destinations for the user. Avoid picking multiple destinations
+Take into account the following preferences from the user:
+{{description}}
+{{#each imageUrls}}{{media url=this}}{{/each}}
+
+Select the best destinations from the provided context and return exactly 3 trip suggestions.
+
+For the ref field, use the exact destination name as it appears in the context (e.g. "Máncora", "Cusco", "Machu Picchu").

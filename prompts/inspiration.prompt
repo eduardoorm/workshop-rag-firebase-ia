@@ -1,0 +1,20 @@
+---
+model: googleai/gemini-2.5-flash
+input:
+    schema:
+        description?: string    
+        imageUrls?(array): string
+---
+
+Based on the provided information, describe the attribuites od a "dream!" for a vacation that matches the following information:
+{{#if description}}
+Description: {{description}}{{/if}}
+
+{{#if imageUrls.length}}
+Use the following images for inspiration as well, taking into account activities, or "vide".
+
+{{#each imageUrls}}{{media url=this}}{{/each}}{{/if}}
+
+Respond with a three-sentences description of what the ideal place.
+Don't use any specific place names, instead include the types od activities.
+
