@@ -6,8 +6,8 @@ const TripSchema = z.object({
     ref: z.string(),
     title: z.string(),
     description: z.string(),
-    destination: z.unknown().optional(),
-    imageUrl: z.string().optional(),
+    reason: z.string().optional(),
+    imageUrl: z.string(),
 });
 
 export const dreamVacation = ai.defineFlow(
@@ -24,11 +24,11 @@ export const dreamVacation = ai.defineFlow(
          const suggestTripPrompt = ai.prompt('suggestTrip');
       
         //1. procesamos la inspiracion
-        const {text: inspirationResultText} = await inspirationPrompt({
+        const {text } = await inspirationPrompt({
             description: input.description,
             imageUrls: input.imageUrls,
         });
-
+        const inspirationResultText = text + " " + input.description;
         //2. vector search
         const contextPossibleDestinations = await ai.retrieve({
             retriever: destinationRetriever,
@@ -37,9 +37,9 @@ export const dreamVacation = ai.defineFlow(
         }) 
         
         //3. generar trip ideas
-
         const suggestTripResult = await suggestTripPrompt({
-                    input: {description: inspirationResultText, imageUrls: input.imageUrls},
+                    description: inspirationResultText,
+                    imageUrls: input.imageUrls,
                     context: contextPossibleDestinations,
                 });
         

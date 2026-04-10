@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import {
+  Backdrop,
   Box,
   Button,
   CircularProgress,
@@ -10,18 +11,20 @@ import {
   CardContent,
   CardMedia,
 } from "@mui/material";
-
-interface Destination {
-  name?: string;
-  imageUrl?: string;
-}
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 interface Trip {
   ref: string;
   title: string;
   description: string;
-  emoji: string;
-  destination?: Destination;
+  reason: string;
+  imageUrl: string;
+  name: string;
+  destination?: string;
 }
 
 const DreamVacationPage = () => {
@@ -75,117 +78,145 @@ const DreamVacationPage = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
-        Encuentra tu viaje ideal con IA ✈️
-      </Typography>
+    <>
+      <Backdrop
+        open={loading}
+        sx={{
+          zIndex: 9999,
+          color: "#1976d2",
+          flexDirection: "column",
+          gap: 2,
+          bgcolor: "#fff",
+        }}
+      >
+        <CircularProgress color="inherit" size={60} />
+        <Typography variant="h6">Buscando tu viaje ideal...</Typography>
+      </Backdrop>
+      <Container maxWidth="md" sx={{ py: 4 }}>
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
+          Encuentra tu viaje ideal en Perú con IA ✈️
+        </Typography>
 
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 4 }}>
-        <TextField
-          label="Describe tu viaje ideal"
-          placeholder="Ej: playa tranquila con buen surf y comida local"
-          multiline
-          rows={3}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          fullWidth
-        />
-
-        <Box>
-          <input
-            type="file"
-            accept="image/*"
-            ref={fileInputRef}
-            style={{ display: "none" }}
-            onChange={handleImageChange}
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 4 }}>
+          <TextField
+            label="Describe tu viaje ideal"
+            placeholder="Ej: playa tranquila con buen surf y comida local"
+            multiline
+            rows={3}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            fullWidth
           />
+
+          <Box>
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleImageChange}
+            />
+            <Button
+              variant="outlined"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              Subir imagen de inspiración (opcional)
+            </Button>
+          </Box>
+
+          {imagePreview && (
+            <Box sx={{ position: "relative", display: "inline-block" }}>
+              <img
+                src={imagePreview}
+                alt="preview"
+                style={{ maxHeight: 200, borderRadius: 8, objectFit: "cover" }}
+              />
+              <Button
+                size="small"
+                onClick={() => {
+                  setImagePreview(null);
+                  setImageBase64(null);
+                }}
+                sx={{
+                  position: "absolute",
+                  top: 4,
+                  right: 4,
+                  minWidth: 0,
+                  background: "#000000aa",
+                  color: "#fff",
+                }}
+              >
+                ✕
+              </Button>
+            </Box>
+          )}
+
           <Button
-            variant="outlined"
-            onClick={() => fileInputRef.current?.click()}
+            variant="contained"
+            size="large"
+            onClick={handleSubmit}
+            disabled={loading || (!description && !imageBase64)}
           >
-            Subir imagen de inspiración (opcional)
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "Buscar con IA"
+            )}
           </Button>
         </Box>
 
-        {imagePreview && (
-          <Box sx={{ position: "relative", display: "inline-block" }}>
-            <img
-              src={imagePreview}
-              alt="preview"
-              style={{ maxHeight: 200, borderRadius: 8, objectFit: "cover" }}
-            />
-            <Button
-              size="small"
-              onClick={() => {
-                setImagePreview(null);
-                setImageBase64(null);
-              }}
-              sx={{
-                position: "absolute",
-                top: 4,
-                right: 4,
-                minWidth: 0,
-                background: "#000000aa",
-                color: "#fff",
-              }}
-            >
-              ✕
-            </Button>
-          </Box>
+        {error && (
+          <Typography color="error" sx={{ mb: 2 }}>
+            {error}
+          </Typography>
         )}
 
-        <Button
-          variant="contained"
-          size="large"
-          onClick={handleSubmit}
-          disabled={loading || (!description && !imageBase64)}
-        >
-          {loading ? (
-            <CircularProgress size={24} color="inherit" />
-          ) : (
-            "Buscar con IA"
-          )}
-        </Button>
-      </Box>
-
-      {error && (
-        <Typography color="error" sx={{ mb: 2 }}>
-          {error}
-        </Typography>
-      )}
-
-      {trips.length > 0 && (
-        <>
-          <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
-            Sugerencias para ti
-          </Typography>
-          <Box sx={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
-            {trips.map((trip) => (
-              <Card key={trip.ref} sx={{ width: 300 }}>
-                {trip.destination?.imageUrl && (
-                  <CardMedia
-                    image={trip.destination.imageUrl}
-                    title={trip.title}
-                    sx={{ height: 180 }}
-                  />
-                )}
-                <CardContent>
-                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    {trip.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {trip.destination?.name}
-                  </Typography>
-                  <Typography variant="body2" sx={{ mt: 1 }}>
-                    {trip.description}
-                  </Typography>
-                </CardContent>
-              </Card>
-            ))}
-          </Box>
-        </>
-      )}
-    </Container>
+        {trips.length > 0 && (
+          <>
+            <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
+              Sugerencias para ti
+            </Typography>
+            <Swiper
+              modules={[Navigation, Pagination]}
+              navigation
+              pagination={{ clickable: true }}
+              spaceBetween={24}
+              slidesPerView={1}
+              breakpoints={{
+                600: { slidesPerView: 2 },
+                900: { slidesPerView: 3 },
+              }}
+              style={{ paddingBottom: 40 }}
+            >
+              {trips.map((trip) => (
+                <SwiperSlide key={trip.ref}>
+                  <Card>
+                    {trip.imageUrl && (
+                      <CardMedia
+                        image={trip.imageUrl}
+                        title={trip.title}
+                        sx={{ height: 180 }}
+                      />
+                    )}
+                    <CardContent>
+                      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                        {trip.title}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {trip.ref}
+                      </Typography>
+                      <Typography variant="body2" sx={{ mt: 1 }}>
+                        {trip.description}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </>
+        )}
+      </Container>
+    </>
   );
 };
 
