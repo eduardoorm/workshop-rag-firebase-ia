@@ -1,0 +1,248 @@
+import { createDestination } from '@dataconnect/generated';
+import { dc } from '../../lib/firebase';
+const destinations = [
+  {
+    ref: 'machu-picchu',
+    name: 'Machu Picchu',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Ciudadela inca en lo alto de los Andes, ideal para trekking, senderismo y explorar ruinas históricas con paisajes de montaña impresionantes',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Machu_Picchu%2C_Peru_%282018%29.jpg/1280px-Machu_Picchu%2C_Peru_%282018%29.jpg',
+    tags: ['senderismo', 'historia', 'montañas', 'UNESCO'],
+  },
+  {
+    ref: 'cusco',
+    name: 'Cusco',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Capital histórica del Imperio Inca con arquitectura colonial, calles adoquinadas, mercados vibrantes y puerta de entrada al Valle Sagrado',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Plaza_de_Cusco_Allison_Bellido.jpg/1920px-Plaza_de_Cusco_Allison_Bellido.jpg',
+    tags: ['historia', 'cultura', 'Inca', 'mercados', 'arquitectura'],
+  },
+  {
+    ref: 'lago-titicaca',
+    name: 'Lago Titicaca',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'El lago navegable más alto del mundo con islas flotantes de totora, comunidades indígenas, paseos en bote y paisajes andinos impresionantes',
+    imageUrl: 'https://cdn.pixabay.com/photo/2017/07/11/18/08/lake-titicaca-2494522_1280.jpg',
+    tags: ['lago', 'cultura', 'indígena', 'naturaleza', 'único'],
+  },
+  {
+    ref: 'canon-del-colca',
+    name: 'Cañón del Colca',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Uno de los cañones más profundos del mundo, famoso por el avistamiento de cóndores, trekking, aguas termales y pueblos andinos tradicionales',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Valley_of_Colca_River%2C_Peru.jpg/1920px-Valley_of_Colca_River%2C_Peru.jpg',
+    tags: ['trekking', 'fauna', 'cañón', 'aventura', 'naturaleza'],
+  },
+  {
+    ref: 'lineas-de-nazca',
+    name: 'Líneas de Nazca',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Misteriosos geoglifos antiguos trazados en el desierto, mejor vistos desde avioneta, combinados con dunas de arena y fauna costera',
+    imageUrl: 'https://files.pucp.education/puntoedu/wp-content/uploads/2025/06/04172152/web-1920x1080-lineas-de-nazca.jpg',
+    tags: ['historia', 'misterio', 'desierto', 'UNESCO', 'único'],
+  },
+  {
+    ref: 'huacachina',
+    name: 'Huacachina',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Oasis único en medio de enormes dunas de arena, famoso por sandboard, paseos en buggy y espectaculares atardeceres en el desierto',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d4/Oasis_de_Huacachina%2C_Ica%2C_Per%C3%BA%2C_2015-07-29%2C_DD_18.JPG',
+    tags: ['aventura', 'desierto', 'sandboard', 'único', 'naturaleza'],
+  },
+  {
+    ref: 'mancora',
+    name: 'Máncora',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Popular balneario en la costa norte con aguas cálidas, surf, ceviche y mariscos frescos, vida nocturna y sol durante todo el año',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/6/65/Mancorabeach1.jpg',
+    tags: ['playa', 'surf', 'gastronomía', 'relax', 'tropical'],
+  },
+  {
+    ref: 'valle-sagrado',
+    name: 'Valle Sagrado',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Fértil valle de los Incas con sitios arqueológicos, mercados tradicionales en Pisac y Ollantaytambo, y viaje en tren panorámico a Machu Picchu',
+    imageUrl: 'https://picchutravel.com/wp-content/uploads/tour-valle-sagrado-y-machu-picchu-cusco.jpg',
+    tags: ['historia', 'cultura', 'Inca', 'naturaleza', 'trekking'],
+  },
+  {
+    ref: 'catarata-gocta',
+    name: 'Catarata de Gocta',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Una de las cataratas más altas del mundo, rodeada de selva y accesible mediante trekking',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/16/Gocta.jpg',
+    tags: ['cascadas', 'selva', 'trekking', 'naturaleza', 'aventura'],
+  },
+  {
+    ref: 'nevado-huascaran',
+    name: 'Nevado Huascarán',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'La montaña más alta del Perú, ubicada en la Cordillera Blanca, ideal para alpinismo',
+    imageUrl: 'https://cloudfront-us-east-1.images.arcpublishing.com/infobae/OJDYPZIQXRHELHWVTSG7CA2NLQ.jpg',
+    tags: ['montañas', 'alpinismo', 'aventura', 'naturaleza', 'nieve'],
+  },
+  {
+    ref: 'bosque-piedras-huayllay',
+    name: 'Bosque de Piedras de Huayllay',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Formaciones rocosas volcánicas con formas curiosas en un paisaje andino único',
+    imageUrl: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1c/86/f9/e6/bosque-de-piedras-de.jpg',
+    tags: ['naturaleza', 'rocas', 'aventura', 'paisaje', 'único'],
+  },
+  {
+    ref: 'laguna-humantay',
+    name: 'Laguna Humantay',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Laguna turquesa al pie de un nevado, accesible por trekking desde Soraypampa',
+    imageUrl: 'https://abexpeditions.com/es/wp-content/uploads/2021/09/laguna-humantay-senorita.jpg',
+    tags: ['laguna', 'montañas', 'trekking', 'naturaleza', 'fotografía'],
+  },
+  {
+    ref: 'valle-colca',
+    name: 'Valle del Colca',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Valle andino con terrazas agrícolas ancestrales y vistas al cañón del Colca',
+    imageUrl: 'https://www.peru.travel/Contenido/Atractivo/Imagen/es/8/1.2/Principal/canon-del-colca-desktop.jpg',
+    tags: ['valle', 'cultura', 'naturaleza', 'paisaje', 'historia'],
+  },
+  {
+    ref: 'catarata-ahuashiyacu',
+    name: 'Catarata Ahuashiyacu',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Hermosa caída de agua en la selva de Tarapoto, rodeada de vegetación exuberante',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/cd/Cataras_de_Ahuashiyacu.jpg',
+    tags: ['cascadas', 'selva', 'naturaleza', 'relax', 'fotografía'],
+  },
+  {
+    ref: 'cordillera-blanca',
+    name: 'Cordillera Blanca',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Cadena montañosa tropical con glaciares, lagunas y rutas de trekking de clase mundial',
+    imageUrl: 'https://images.myguide-cdn.com/md/common/large/5db823ceb4138-629846.jpg',
+    tags: ['montañas', 'trekking', 'naturaleza', 'aventura', 'glaciares'],
+  },
+  {
+    ref: 'playa-roja-paracas',
+    name: 'Playa Roja',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Playa única de arena rojiza ubicada dentro de la Reserva de Paracas',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/6/62/Playa_Roja_-_Paracas_National_Reserve%2C_Ica.jpg',
+    tags: ['playa', 'naturaleza', 'paisaje', 'único', 'fotografía'],
+  },
+
+  // (continúan 25 más ↓)
+  {
+    ref: 'catarata-yumbilla',
+    name: 'Catarata Yumbilla',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Una de las cataratas más altas del mundo, ubicada en la región Amazonas',
+    imageUrl: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/06/04/ed/c6/yumbilla-waterfall.jpg',
+    tags: ['cascadas', 'selva', 'aventura', 'naturaleza', 'altura'],
+  },
+  {
+    ref: 'nevado-ausangate',
+    name: 'Nevado Ausangate',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Montaña sagrada andina con rutas de trekking alrededor de paisajes de alta montaña',
+    imageUrl: 'https://www.incatrailmachu.com/img/ausangate-trek-032-01.jpg',
+    tags: ['montañas', 'trekking', 'naturaleza', 'aventura', 'cultura'],
+  },
+  {
+    ref: 'laguna-paron',
+    name: 'Laguna Parón',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'La laguna más grande de la Cordillera Blanca con aguas de color turquesa intenso',
+    imageUrl: 'https://www.torntackies.com/wp-content/uploads/2024/02/Laguna-Paron-Huaraz.jpg',
+    tags: ['laguna', 'naturaleza', 'montañas', 'fotografía', 'paisaje'],
+  },
+  {
+    ref: 'playa-zorritos',
+    name: 'Playa Zorritos',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Playa tranquila del norte con aguas cálidas y ambiente relajado',
+    imageUrl: 'https://www.ytuqueplanes.com/imagenes//fotos/banners/meta-PLAYA-ZORRITOS.webp',
+    tags: ['playa', 'relax', 'sol', 'tropical', 'tranquilo'],
+  },
+  {
+    ref: 'cueva-lechuzas',
+    name: 'Cueva de las Lechuzas',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Caverna natural en Tingo María con fauna como aves y murciélagos',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/11/Cueva_de_las_Lechuzas%2C_al_Parc_Nacional_de_Tingo_Mar%C3%ADa05.jpg',
+    tags: ['cueva', 'naturaleza', 'fauna', 'aventura', 'exploración'],
+  },
+  {
+    ref: 'parque-nacional-manu',
+    name: 'Parque Nacional del Manu',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Reserva de biosfera con una de las mayores biodiversidades del planeta',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d6/Manu_National_Park-71.jpg',
+    tags: ['selva', 'biodiversidad', 'naturaleza', 'ecoturismo', 'UNESCO'],
+  },
+  {
+    ref: 'playa-punta-hermosa',
+    name: 'Playa Punta Hermosa',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Destino popular para surf cerca de Lima con olas ideales todo el año',
+    imageUrl: 'https://larepublica.cronosmedia.glr.pe/original/2025/01/20/678ee966d94a25192032b838.jpg',
+    tags: ['playa', 'surf', 'aventura', 'mar', 'deporte'],
+  },
+  {
+    ref: 'lomas-de-lachay',
+    name: 'Lomas de Lachay',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Ecosistema único que florece en invierno en la costa peruana con vegetación y fauna',
+    imageUrl: 'https://www.incatrailmachu.com/img/lomas-lachay-06-1762.jpg',
+    tags: ['naturaleza', 'ecosistema', 'fauna', 'senderismo', 'único'],
+  },
+  {
+    ref: 'playa-caballeros',
+    name: 'Playa Caballeros',
+    country: 'Peru',
+    continent: 'South America',
+    knownFor: 'Playa reconocida por sus olas ideales para surfistas experimentados',
+    imageUrl: 'https://larepublica.cronosmedia.glr.pe/original/2025/01/24/6793cd228b976778a32d046d.jpg',
+    tags: ['playa', 'surf', 'aventura', 'mar', 'deporte'],
+  },
+];
+
+
+async function seed() {
+  console.log('Cargando destinos...');
+  for (const destination of destinations) {
+    try {
+      await createDestination(dc, destination);
+      console.log(`✓ ${destination.name}`);
+      await new Promise(resolve => setTimeout(resolve, 500));
+    } catch (error) {
+      console.error(`✗ ${destination.name}:`, error);
+    }
+  }
+  console.log('¡Listo!');
+}
+
+seed();
